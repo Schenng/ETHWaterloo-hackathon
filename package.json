@@ -4,10 +4,10 @@
   "private": true,
   "dependencies": {
     "@shopify/polaris": "^1.7.0",
-    "react": "^15.3.0",
+    "react": "^15.6.2",
     "react-addons-transition-group": "^15.6.2",
-    "react-dom": "^15.3.0",
-    "react-scripts": "1.0.14"
+    "react-dom": "^15.6.2",
+    "react-scripts": "^1.0.14"
   },
   "scripts": {
     "start": "react-scripts start",
