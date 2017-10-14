@@ -30,14 +30,16 @@ class App extends Component {
       takerInputAddress: "",  
       makerAskAmount: "",
       makerAskAmountChange: "",
+      makerBuyAmount: "",
     }
     this.handleMakerInputChange = this.handleMakerInputChange.bind(this);
     this.handleMakerSellAmountChange = this.handleMakerSellAmountChange.bind(this);
     this.handleMakerAskAmountChange = this.handleMakerAskAmountChange.bind(this);
     this.handleTakerInputChange = this.handleTakerInputChange.bind(this);
+    this.handleMakerBuyAmountChange = this.handleMakerBuyAmountChange.bind(this);
 
     this.offer = this.offer.bind(this);
-   this.buy = this.buy.bind(this);
+    this.buy = this.buy.bind(this);
 
   }
 
@@ -48,7 +50,7 @@ class App extends Component {
 
       const DECIMALS = 18; 
 
-        // Addresses
+      // Addresses
       const NULL_ADDRESS = ZeroEx.NULL_ADDRESS;                                    // Ethereum Null address
       const WETH_ADDRESS = await zeroEx.etherToken.getContractAddressAsync();      // The wrapped ETH token contract
       const ZRX_ADDRESS  = await zeroEx.exchange.getZRXTokenAddressAsync();        // The ZRX token contract
@@ -97,9 +99,11 @@ class App extends Component {
   
   }
 
-  buy(signedOrder, takerInputAddress) {
+  buy(signedOrder, takerInputAddress,makerBuyAmount ) {
     (async () => {
       console.log("BUY")
+      console.log("Maker buy amount");
+      console.log(makerBuyAmount);
       const DECIMALS = 18; 
       console.log('takerInputAddress')
       console.log(takerInputAddress)
@@ -152,6 +156,10 @@ class App extends Component {
     this.setState({takerInputAddress: event});
   }
 
+  handleMakerBuyAmountChange(event) {
+    this.setState({makerBuyAmount: event});
+  }
+
   render() {
     console.log(this.state)
     return (
@@ -161,7 +169,9 @@ class App extends Component {
         <Card title="ERC20 Swap">
           <Card.Section>
             <TextField
-              label="Sell amount"
+              label="Buy amount"
+              value={this.state.makerBuyAmount}
+              onChange={(event)=> this.handleMakerBuyAmountChange(event)}
               type="number"
               helpText="Input the amount of tokens you want to sell."
             />
@@ -177,7 +187,7 @@ class App extends Component {
           </Card.Section>
           
           <Card.Section>
-          <Button destructive onClick={()=>this.buy(this.state.signedOrders,this.state.takerInputAddress)}>Buy</Button>
+          <Button destructive onClick={()=>this.buy(this.state.signedOrders,this.state.takerInputAddress,this.state.makerBuyAmount)}>Buy</Button>
           </Card.Section>
         </Card>
 
@@ -192,14 +202,14 @@ class App extends Component {
             />
              <TextField
               label="Sell"
-              helpText="How much you are selling."
+              helpText="Specify the amount of token to be sold."
               value={this.state.makerSellAmount}
               onChange={(event)=> this.handleMakerSellAmountChange(event)}
               type="text"
             />
              <TextField
               label="Ask"
-              helpText="How much you want in return."
+              helpText="Specify the amount of token to be received."
               value={this.state.makerAskAmount}
               onChange={(event)=> this.handleMakerAskAmountChange(event)}
               type="text"
