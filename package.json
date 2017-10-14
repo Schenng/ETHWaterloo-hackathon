@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "@shopify/polaris": "^1.7.0",
+    "react": "^15.3.0",
+    "react-addons-transition-group": "^15.6.2",
+    "react-dom": "^15.3.0",
     "react-scripts": "1.0.14"
   },
   "scripts": {
