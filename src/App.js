@@ -27,18 +27,22 @@ class App extends Component {
       this.state = {
       signedOrders: null,
       makerInputAddress: "",
-      takerInputAddress: "",
-
+      takerInputAddress: "",  
+      makerAskAmount: "",
+      makerAskAmountChange: "",
     }
     this.handleMakerInputChange = this.handleMakerInputChange.bind(this);
+    this.handleMakerSellAmountChange = this.handleMakerSellAmountChange.bind(this);
+    this.handleMakerAskAmountChange = this.handleMakerAskAmountChange.bind(this);
     this.handleTakerInputChange = this.handleTakerInputChange.bind(this);
+
     this.offer = this.offer.bind(this);
    this.buy = this.buy.bind(this);
 
   }
 
  
-    offer(makerInputAddress) {
+    offer(makerInputAddress,makerSellAmount,makerAskAmount) {
       (async () => {
       console.log("OFFER")
 
@@ -70,8 +74,8 @@ class App extends Component {
           salt: ZeroEx.generatePseudoRandomSalt(),
           makerFee: new BigNumber(0),
           takerFee: new BigNumber(0),
-          makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(0.2), DECIMALS),  // Base 18 decimals
-          takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(0.3), DECIMALS),  // Base 18 decimals
+          makerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(makerSellAmount), DECIMALS),  // Base 18 decimals
+          takerTokenAmount: ZeroEx.toBaseUnitAmount(new BigNumber(makerAskAmount), DECIMALS),  // Base 18 decimals
           expirationUnixTimestampSec: new BigNumber(Date.now() + 3600000),          // Valid up to an hour
         };
 
@@ -136,6 +140,14 @@ class App extends Component {
     this.setState({makerInputAddress: event});
   }
 
+  handleMakerSellAmountChange(event) {
+    this.setState({makerSellAmount: event});
+  }
+
+  handleMakerAskAmountChange(event) {
+    this.setState({makerAskAmount: event});
+  }
+
   handleTakerInputChange(event) {
     this.setState({takerInputAddress: event});
   }
@@ -163,6 +175,13 @@ class App extends Component {
               type="text"
             />
           </Card.Section>
+          
+          <Card.Section>
+          <Button destructive onClick={()=>this.buy(this.state.signedOrders,this.state.takerInputAddress)}>Buy</Button>
+          </Card.Section>
+        </Card>
+
+        <Card>
           <Card.Section>
             <TextField
               label="Maker address"
@@ -171,10 +190,23 @@ class App extends Component {
               onChange={(event)=> this.handleMakerInputChange(event)}
               type="text"
             />
-          </Card.Section>
-          <Card.Section>
-          <Button primary onClick={()=> this.offer(this.state.makerInputAddress)}>Offer</Button>
-          <Button destructive onClick={()=>this.buy(this.state.signedOrders,this.state.takerInputAddress)}>Buy</Button>
+             <TextField
+              label="Sell"
+              helpText="How much you are selling."
+              value={this.state.makerSellAmount}
+              onChange={(event)=> this.handleMakerSellAmountChange(event)}
+              type="text"
+            />
+             <TextField
+              label="Ask"
+              helpText="How much you want in return."
+              value={this.state.makerAskAmount}
+              onChange={(event)=> this.handleMakerAskAmountChange(event)}
+              type="text"
+            />
+            <Card.Section>
+              <Button primary onClick={()=> this.offer(this.state.makerInputAddress,this.state.makerSellAmount,this.state.makerAskAmount)}>Offer</Button>
+            </Card.Section>
           </Card.Section>
         </Card>
       </Page>
