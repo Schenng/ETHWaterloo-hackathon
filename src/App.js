@@ -26,17 +26,21 @@ class App extends Component {
     super(props);
       this.state = {
       signedOrders: null,
-      takerAddress: null
+      makerInputAddress: "",
+      takerInputAddress: "",
+
     }
-    this.buy = this.buy.bind(this);
-   this.sell = this.sell.bind(this);
+    this.handleMakerInputChange = this.handleMakerInputChange.bind(this);
+    this.handleTakerInputChange = this.handleTakerInputChange.bind(this);
+    this.offer = this.offer.bind(this);
+   this.buy = this.buy.bind(this);
 
   }
 
  
-    buy(e) {
+    offer(makerInputAddress) {
       (async () => {
-      console.log("BUY")
+      console.log("OFFER")
 
       const DECIMALS = 18; 
 
@@ -46,33 +50,18 @@ class App extends Component {
       const ZRX_ADDRESS  = await zeroEx.exchange.getZRXTokenAddressAsync();        // The ZRX token contract
       const EXCHANGE_ADDRESS   = await zeroEx.exchange.getContractAddressAsync();  // The Exchange.sol address (0x exchange smart contract)
       const accounts =  await zeroEx.getAvailableAddressesAsync();
-      const makerAddress = accounts[0];
-      const takerAddress = accounts[1];
 
-      console.log(makerAddress);
-      console.log(takerAddress);
+      console.log(accounts);
 
 
         // Unlimited allowances to 0x contract for maker
-        const txHashAllowMaker = await zeroEx.token.setUnlimitedProxyAllowanceAsync(ZRX_ADDRESS,  makerAddress); 
+        const txHashAllowMaker = await zeroEx.token.setUnlimitedProxyAllowanceAsync(ZRX_ADDRESS,  makerInputAddress); 
         await zeroEx.awaitTransactionMinedAsync(txHashAllowMaker);
 
-        // Unlimited allowances to 0x contract for taker
-        const txHashAllowTaker = await zeroEx.token.setUnlimitedProxyAllowanceAsync(WETH_ADDRESS, takerAddress);
-        await zeroEx.awaitTransactionMinedAsync(txHashAllowTaker);
-
-        // Convert 1 to base unit 16
-        const ethToConvert = ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS); 
-
-        // Change ETH to WETH
-        const txHashWETH = await zeroEx.etherToken.depositAsync(ethToConvert, takerAddress);
-
-        //Mine the transaction that converts ETH to WETH
-        await zeroEx.awaitTransactionMinedAsync(txHashWETH);
 
         // Generate order
         const order = { 
-          maker: makerAddress, 
+          maker: makerInputAddress, 
           taker: NULL_ADDRESS,
           feeRecipient: NULL_ADDRESS,
           makerTokenAddress: ZRX_ADDRESS,
@@ -90,7 +79,7 @@ class App extends Component {
         const orderHash = ZeroEx.getOrderHashHex(order);
 
         // Signing orderHash -> ecSignature
-        const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerAddress);
+        const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerInputAddress);
 
         // Appending signature to order
         const signedOrder = { 
@@ -99,16 +88,30 @@ class App extends Component {
                             };
 
         this.setState({signedOrders: signedOrder})
-        this.setState({takerAddress: takerAddress})
 
         })().catch(console.log);
   
   }
 
-  sell(signedOrder, takerAddress) {
+  buy(signedOrder, takerInputAddress) {
     (async () => {
-      console.log("SELL")
+      console.log("BUY")
       const DECIMALS = 18; 
+      console.log('takerInputAddress')
+      console.log(takerInputAddress)
+       const WETH_ADDRESS = await zeroEx.etherToken.getContractAddressAsync();  
+              // Unlimited allowances to 0x contract for taker
+        const txHashAllowTaker = await zeroEx.token.setUnlimitedProxyAllowanceAsync(WETH_ADDRESS, takerInputAddress);
+        await zeroEx.awaitTransactionMinedAsync(txHashAllowTaker);
+
+        // Convert 1 to base unit 16
+        const ethToConvert = ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS); 
+
+        // Change ETH to WETH
+        const txHashWETH = await zeroEx.etherToken.depositAsync(ethToConvert, takerInputAddress);
+
+        //Mine the transaction that converts ETH to WETH
+        await zeroEx.awaitTransactionMinedAsync(txHashWETH);
 
         // Verify if order is fillable
         await zeroEx.exchange.validateOrderFillableOrThrowAsync(signedOrder);
@@ -119,7 +122,7 @@ class App extends Component {
 
         // Try filling order
         const txHash = await zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerTokenAmount, 
-                                                                  shouldThrowOnInsufficientBalanceOrAllowance, takerAddress,);
+                                                                  shouldThrowOnInsufficientBalanceOrAllowance, takerInputAddress,);
                                                             
         // Transaction Receipt
         const txReceipt = await zeroEx.awaitTransactionMinedAsync(txHash);
@@ -128,6 +131,14 @@ class App extends Component {
         })().catch(console.log);
   }
 
+
+  handleMakerInputChange(event) {
+    this.setState({makerInputAddress: event});
+  }
+
+  handleTakerInputChange(event) {
+    this.setState({takerInputAddress: event});
+  }
 
   render() {
     console.log(this.state)
@@ -145,19 +156,25 @@ class App extends Component {
           </Card.Section>
           <Card.Section>
             <TextField
-              label="Destination address"
+              label="Taker address"
               helpText="Input address you want your tokens to be deposited."
+              value={this.state.takerInputAddress}
+              onChange={(event)=> this.handleTakerInputChange(event)}
+              type="text"
             />
           </Card.Section>
           <Card.Section>
             <TextField
-              label="Refund address"
+              label="Maker address"
               helpText="Input address you want any leftover tokens to be sent to."
+              value={this.state.makerInputAddress}
+              onChange={(event)=> this.handleMakerInputChange(event)}
+              type="text"
             />
           </Card.Section>
           <Card.Section>
-          <Button primary onClick={()=> this.buy()}>Buy</Button>
-          <Button destructive onClick={()=>this.sell(this.state.signedOrders,this.state.takerAddress)}>Sell</Button>
+          <Button primary onClick={()=> this.offer(this.state.makerInputAddress)}>Offer</Button>
+          <Button destructive onClick={()=>this.buy(this.state.signedOrders,this.state.takerInputAddress)}>Buy</Button>
           </Card.Section>
         </Card>
       </Page>
