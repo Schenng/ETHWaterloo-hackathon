@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+
+import '@shopify/polaris/styles.css';
+import {
+  Layout,
+  Page,
+  Card,
+  Button,
+  TextField,
+} from '@shopify/polaris';
 
 import Web3 from 'web3';
 import {ZeroEx} from '0x.js';
@@ -24,13 +31,13 @@ class App extends Component {
     handleClick(e) {
       (async () => {
            WETH_ADDRESS = await zeroEx.etherToken.getContractAddressAsync();      // The wrapped ETH token contract
-           ZRX_ADDRESS  = await zeroEx.exchange.getZRXTokenAddressAsync();  
+           ZRX_ADDRESS  = await zeroEx.exchange.getZRXTokenAddressAsync();
             zeroEx.getAvailableAddressesAsync()
         .then(function(availableAddresses) {
 
          const makerAddress = availableAddresses[0];
          const takerAddress = availableAddresses[1]
-        
+
         trade(zeroEx, WETH_ADDRESS, ZRX_ADDRESS, makerAddress, takerAddress);
       })
       .catch(function(error) {
@@ -39,22 +46,40 @@ class App extends Component {
 
       })().catch(console.log);
 
-  
+
 
   }
-
-
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-     <button href="#" onClick={this.handleClick}>
-      Click me
-    </button>
-      </div>
+      <Page
+        title="0x shapeshift"
+    >
+        <Card title="ERC20 Swap">
+          <Card.Section>
+            <TextField
+              label="Sell amount"
+              type="number"
+              helpText="Input the amount of tokens you want to sell."
+            />
+          </Card.Section>
+          <Card.Section>
+            <TextField
+              label="Destination address"
+              helpText="Input address you want your tokens to be deposited."
+            />
+          </Card.Section>
+          <Card.Section>
+            <TextField
+              label="Refund address"
+              helpText="Input address you want any leftover tokens to be sent to."
+            />
+          </Card.Section>
+          <Card.Section>
+          <Button primary>Buy</Button>
+          <Button destructive>Sell</Button>
+          </Card.Section>
+        </Card>
+      </Page>
     );
   }
 }
