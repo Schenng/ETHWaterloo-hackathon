@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import '@shopify/polaris/styles.css';
 import {
-  Layout,
   Page,
   Card,
   Button,
@@ -17,7 +16,7 @@ import trade from './trade.js';
 const provider = new Web3.providers.HttpProvider('http://localhost:8545')
 const zeroEx = new ZeroEx(provider);
 let WETH_ADDRESS;
-let ZRX_ADDRESS
+let ZRX_ADDRESS;
 
 
 class App extends Component {
@@ -27,10 +26,11 @@ class App extends Component {
       this.state = {
       signedOrders: null,
       makerInputAddress: "",
-      takerInputAddress: "",  
+      takerInputAddress: "",
       makerAskAmount: "",
       makerAskAmountChange: "",
       makerBuyAmount: "",
+      open: true,
     }
     this.handleMakerInputChange = this.handleMakerInputChange.bind(this);
     this.handleMakerSellAmountChange = this.handleMakerSellAmountChange.bind(this);
@@ -43,12 +43,12 @@ class App extends Component {
 
   }
 
- 
+
     offer(makerInputAddress,makerSellAmount,makerAskAmount) {
       (async () => {
       console.log("OFFER")
 
-      const DECIMALS = 18; 
+      const DECIMALS = 18;
 
       // Addresses
       const NULL_ADDRESS = ZeroEx.NULL_ADDRESS;                                    // Ethereum Null address
@@ -61,13 +61,13 @@ class App extends Component {
 
 
         // Unlimited allowances to 0x contract for maker
-        const txHashAllowMaker = await zeroEx.token.setUnlimitedProxyAllowanceAsync(ZRX_ADDRESS,  makerInputAddress); 
+        const txHashAllowMaker = await zeroEx.token.setUnlimitedProxyAllowanceAsync(ZRX_ADDRESS,  makerInputAddress);
         await zeroEx.awaitTransactionMinedAsync(txHashAllowMaker);
 
 
         // Generate order
-        const order = { 
-          maker: makerInputAddress, 
+        const order = {
+          maker: makerInputAddress,
           taker: NULL_ADDRESS,
           feeRecipient: NULL_ADDRESS,
           makerTokenAddress: ZRX_ADDRESS,
@@ -88,15 +88,15 @@ class App extends Component {
         const ecSignature = await zeroEx.signOrderHashAsync(orderHash, makerInputAddress);
 
         // Appending signature to order
-        const signedOrder = { 
-                   ...order, 
-                   ecSignature, 
+        const signedOrder = {
+                   ...order,
+                   ecSignature,
                             };
 
         this.setState({signedOrders: signedOrder})
 
         })().catch(console.log);
-  
+
   }
 
   buy(signedOrder, takerInputAddress,makerBuyAmount ) {
@@ -104,16 +104,16 @@ class App extends Component {
       console.log("BUY")
       console.log("Maker buy amount");
       console.log(makerBuyAmount);
-      const DECIMALS = 18; 
+      const DECIMALS = 18;
       console.log('takerInputAddress')
       console.log(takerInputAddress)
-       const WETH_ADDRESS = await zeroEx.etherToken.getContractAddressAsync();  
+       const WETH_ADDRESS = await zeroEx.etherToken.getContractAddressAsync();
               // Unlimited allowances to 0x contract for taker
         const txHashAllowTaker = await zeroEx.token.setUnlimitedProxyAllowanceAsync(WETH_ADDRESS, takerInputAddress);
         await zeroEx.awaitTransactionMinedAsync(txHashAllowTaker);
 
         // Convert 1 to base unit 16
-        const ethToConvert = ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS); 
+        const ethToConvert = ZeroEx.toBaseUnitAmount(new BigNumber(1), DECIMALS);
 
         // Change ETH to WETH
         const txHashWETH = await zeroEx.etherToken.depositAsync(ethToConvert, takerInputAddress);
@@ -129,9 +129,9 @@ class App extends Component {
         const fillTakerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
 
         // Try filling order
-        const txHash = await zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerTokenAmount, 
+        const txHash = await zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerTokenAmount,
                                                                   shouldThrowOnInsufficientBalanceOrAllowance, takerInputAddress,);
-                                                            
+
         // Transaction Receipt
         const txReceipt = await zeroEx.awaitTransactionMinedAsync(txHash);
         console.log(txReceipt.logs);
@@ -185,7 +185,7 @@ class App extends Component {
               type="text"
             />
           </Card.Section>
-          
+
           <Card.Section>
           <Button destructive onClick={()=>this.buy(this.state.signedOrders,this.state.takerInputAddress,this.state.makerBuyAmount)}>Buy</Button>
           </Card.Section>
