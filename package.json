@@ -3,11 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "0x.js": "^0.21.4",
     "@shopify/polaris": "^1.7.0",
+    "bignumber.js": "^4.1.0",
     "react": "^15.6.2",
     "react-addons-transition-group": "^15.6.2",
     "react-dom": "^15.6.2",
-    "react-scripts": "^1.0.14"
+    "react-scripts": "^1.0.14",
+    "web3": "^1.0.0-beta.23"
   },
   "scripts": {
     "start": "react-scripts start",
