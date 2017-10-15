@@ -38,6 +38,8 @@ class App extends Component {
       tokenList: [],
       makerReceiveToken: "",
       makerSellToken: ""
+      makerTokenType: null,
+      makerTokenType: null,
     }
     this.handleMakerInputChange = this.handleMakerInputChange.bind(this);
     this.handleMakerSellAmountChange = this.handleMakerSellAmountChange.bind(this);
@@ -191,25 +193,26 @@ class App extends Component {
     this.setState({makerReceiveToken: event});
   }
 
-  getMakerBalance(makerInputAddress) {
+  getMakerBalance(makerTokenType, makerInputAddress) {
+
     const DECIMALS = 18;
 
     (async () => {
-      console.log("hi")
-      const ZRX_ADDRESS  = await zeroEx.exchange.getZRXTokenAddressAsync();
-      const balance = await zeroEx.token.getBalanceAsync(ZRX_ADDRESS, makerInputAddress)
+
+      const tokenAddress = await zeroEx.tokenRegistry.getTokenAddressBySymbolIfExistsAsync(makerTokenType)
+      const balance = await zeroEx.token.getBalanceAsync(tokenAddress, makerInputAddress)
+    
     this.setState({makerBalance: balance.toNumber()});
 
         })().catch(console.log);
   }
 
-  getTakerBalance(takerInputAddress) {
+  getTakerBalance(takerTokenType, takerInputAddress) {
     const DECIMALS = 18;
 
     (async () => {
-      console.log("hi")
-      const WETH_ADDRESS = await zeroEx.etherToken.getContractAddressAsync();
-      const balance = await zeroEx.token.getBalanceAsync(WETH_ADDRESS, takerInputAddress)
+      const tokenAddress = await zeroEx.tokenRegistry.getTokenAddressBySymbolIfExistsAsync(takerTokenType)
+      const balance = await zeroEx.token.getBalanceAsync(tokenAddress, takerInputAddress)
     this.setState({takerBalance: balance.toNumber()});
 
         })().catch(console.log);
@@ -308,6 +311,14 @@ class App extends Component {
         </Card>
         <Card title="Maker Balance">
           <Card.Section>
+            <Select
+              label="Token Type"
+              options={this.state.tokenList.map((token, i) =>
+            `${token.symbol}`)}
+              placeholder="Select"
+              value={this.state.makerTokenType}
+              onChange={(value)=> this.setState({makerTokenType: value})}
+            />
             <TextField
               label="Maker address"
               helpText="Input address to show balance."
@@ -317,12 +328,20 @@ class App extends Component {
             />
             <div>Current Balance: {this.state.makerBalance}</div>
             <Card.Section>
-              <Button primary onClick={()=> this.getMakerBalance(this.state.makerInputAddress)}>Get Balance</Button>
+              <Button primary onClick={()=> this.getMakerBalance(this.state.makerTokenType ,this.state.makerInputAddress)}>Get Balance</Button>
             </Card.Section>
           </Card.Section>
         </Card>
         <Card title="Taker Balance">
           <Card.Section>
+            <Select
+              label="Token Type"
+              options={this.state.tokenList.map((token, i) =>
+            `${token.symbol}`)}
+              placeholder="Select"
+              value={this.state.takerTokenType}
+              onChange={(value)=> this.setState({takerTokenType: value})}
+            />
             <TextField
               label="Taker address"
               helpText="Input address to show balance."
@@ -332,7 +351,7 @@ class App extends Component {
             />
             <div>Current Balance: {this.state.takerBalance}</div>
             <Card.Section>
-              <Button primary onClick={()=> this.getTakerBalance(this.state.takerInputAddress)}>Get Balance</Button>
+              <Button primary onClick={()=> this.getTakerBalance(this.state.takerTokenType ,this.state.takerInputAddress)}>Get Balance</Button>
             </Card.Section>
           </Card.Section>
         </Card>
