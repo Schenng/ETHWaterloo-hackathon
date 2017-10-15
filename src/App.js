@@ -265,6 +265,9 @@ const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymb
               onChange={(event)=> this.handleMakerInputChange(event)}
               type="text"
             />
+            </Card.Section>
+            <Card.Section>
+
              <Select
               label="Selling Token Type"
               options={this.state.tokenList.map((token, i) =>
@@ -281,6 +284,8 @@ const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymb
               onChange={(event)=> this.handleMakerSellAmountChange(event)}
               type="text"
             />
+            </Card.Section>
+            <Card.Section>
             <Select
               label="Receiving Token"
               options={this.state.tokenList.map((token, i) =>
@@ -296,10 +301,11 @@ const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymb
               onChange={(event)=> this.handleMakerAskAmountChange(event)}
               type="text"
             />
+            </Card.Section>
+
             <Card.Section>
               <Button primary onClick={()=> this.offer(this.state.makerInputAddress,this.state.makerSellAmount,this.state.makerAskAmount,this.state.makerSellToken, this.state.makerReceiveToken)}>Offer</Button>
             </Card.Section>
-          </Card.Section>
         </Card>
         <Card title="Maker Balance">
           <Card.Section>
