@@ -6,6 +6,7 @@ import {
   Card,
   Button,
   TextField,
+  Select
 } from '@shopify/polaris';
 
 import Web3 from 'web3';
@@ -214,6 +215,11 @@ class App extends Component {
     >
         <Card title="ERC20 Swap">
           <Card.Section>
+            <Select
+              label="Token"
+              options={this.state.tokenList.map((token, i) =>`${token.symbol}`)}
+              placeholder="Select"
+            />
             <TextField
               label="Buy amount"
               value={this.state.makerBuyAmount}
@@ -239,6 +245,11 @@ class App extends Component {
 
         <Card>
           <Card.Section>
+          <Select
+              label="Token"
+              options={this.state.tokenList.map((token, i) =>`${token.symbol}`)}
+              placeholder="Select"
+            />
             <TextField
               label="Maker address"
               helpText="Input address you want any leftover tokens to be sent to."
