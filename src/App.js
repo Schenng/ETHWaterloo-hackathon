@@ -307,7 +307,7 @@ const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymb
               <Button primary onClick={()=> this.offer(this.state.makerInputAddress,this.state.makerSellAmount,this.state.makerAskAmount,this.state.makerSellToken, this.state.makerReceiveToken)}>Offer</Button>
             </Card.Section>
         </Card>
-        <Card title="Maker Balance">
+        <Card title="Seller Balance">
           <Card.Section>
             <Select
               label="Token Type"
@@ -318,7 +318,7 @@ const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymb
               onChange={(value)=> this.setState({makerTokenType: value})}
             />
             <TextField
-              label="Maker address"
+              label="Seller address"
               helpText="Input address to show balance."
               value={this.state.makerInputAddress}
               onChange={(event)=> this.handleMakerInputChange(event)}
@@ -330,7 +330,7 @@ const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymb
             </Card.Section>
           </Card.Section>
         </Card>
-        <Card title="Taker Balance">
+        <Card title="Buyer Balance">
           <Card.Section>
             <Select
               label="Token Type"
@@ -341,7 +341,7 @@ const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymb
               onChange={(value)=> this.setState({takerTokenType: value})}
             />
             <TextField
-              label="Taker address"
+              label="Buyer address"
               helpText="Input address to show balance."
               value={this.state.takerInputAddress}
               onChange={(event)=> this.handleTakerInputChange(event)}
