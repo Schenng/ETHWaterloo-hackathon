@@ -36,6 +36,8 @@ class App extends Component {
       takerBalance: "",
       accountsList: [],
       tokenList: [],
+      makerReceiveToken: "",
+      makerSellToken: ""
     }
     this.handleMakerInputChange = this.handleMakerInputChange.bind(this);
     this.handleMakerSellAmountChange = this.handleMakerSellAmountChange.bind(this);
@@ -49,6 +51,7 @@ class App extends Component {
     this.offer = this.offer.bind(this);
     this.buy = this.buy.bind(this);
 
+
   }
 
   componentDidMount() {
@@ -59,9 +62,10 @@ class App extends Component {
   }
 
 
-    offer(makerInputAddress,makerSellAmount,makerAskAmount) {
+    offer(makerInputAddress,makerSellAmount,makerAskAmount, makerSellToken, makerReceiveToken) {
       (async () => {
-      console.log("OFFER")
+      console.log("OFFER");
+      console.log(makerSellToken, makerReceiveToken);
 
       const DECIMALS = 18;
 
@@ -69,6 +73,10 @@ class App extends Component {
       const NULL_ADDRESS = ZeroEx.NULL_ADDRESS;                                    // Ethereum Null address
       const WETH_ADDRESS = await zeroEx.etherToken.getContractAddressAsync();      // The wrapped ETH token contract
       const ZRX_ADDRESS  = await zeroEx.exchange.getZRXTokenAddressAsync();        // The ZRX token contract
+
+      const SELLING_TOKEN_ADDRESS = makerSellToken;
+      const RECEIVING_TOKEN_ADDRESS = makerReceiveToken;
+
       const EXCHANGE_ADDRESS   = await zeroEx.exchange.getContractAddressAsync();  // The Exchange.sol address (0x exchange smart contract)
       const accounts =  await zeroEx.getAvailableAddressesAsync();
 
@@ -85,8 +93,8 @@ class App extends Component {
           maker: makerInputAddress,
           taker: NULL_ADDRESS,
           feeRecipient: NULL_ADDRESS,
-          makerTokenAddress: ZRX_ADDRESS,
-          takerTokenAddress: WETH_ADDRESS,
+          makerTokenAddress: SELLING_TOKEN_ADDRESS,
+          takerTokenAddress: RECEIVING_TOKEN_ADDRESS,
           exchangeContractAddress: EXCHANGE_ADDRESS,
           salt: ZeroEx.generatePseudoRandomSalt(),
           makerFee: new BigNumber(0),
@@ -175,6 +183,14 @@ class App extends Component {
     this.setState({makerBuyAmount: event});
   }
 
+  handleMakerSellTokenChange(event) {
+    this.setState({makerSellToken: event});
+  }
+
+  handleMakerReceiveTokenChange(event) {
+    this.setState({makerReceiveToken: event});
+  }
+
   getMakerBalance(makerInputAddress) {
     const DECIMALS = 18;
 
@@ -257,6 +273,13 @@ class App extends Component {
               onChange={(event)=> this.handleMakerInputChange(event)}
               type="text"
             />
+            <TextField
+              label="Selling Token"
+              helpText="Specify the token to be sold."
+              value={this.state.makerSellToken}
+              onChange={(event)=> this.handleMakerSellTokenChange(event)}
+              type="text"
+            />
              <TextField
               label="Sell"
               helpText="Specify the amount of token to be sold."
@@ -264,15 +287,22 @@ class App extends Component {
               onChange={(event)=> this.handleMakerSellAmountChange(event)}
               type="text"
             />
+            <TextField
+              label="Receiving Token"
+              helpText="Specify the token to be received."
+              value={this.state.makerReceiveToken}
+              onChange={(event)=> this.handleMakerReceiveTokenChange(event)}
+              type="text"
+            />
              <TextField
-              label="Ask"
+              label="Receiving Amount"
               helpText="Specify the amount of token to be received."
               value={this.state.makerAskAmount}
               onChange={(event)=> this.handleMakerAskAmountChange(event)}
               type="text"
             />
             <Card.Section>
-              <Button primary onClick={()=> this.offer(this.state.makerInputAddress,this.state.makerSellAmount,this.state.makerAskAmount)}>Offer</Button>
+              <Button primary onClick={()=> this.offer(this.state.makerInputAddress,this.state.makerSellAmount,this.state.makerAskAmount,this.state.makerSellToken, this.state.makerReceiveToken)}>Offer</Button>
             </Card.Section>
           </Card.Section>
         </Card>
