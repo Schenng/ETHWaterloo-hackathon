@@ -36,8 +36,8 @@ class App extends Component {
       takerBalance: "",
       accountsList: [],
       tokenList: [],
-      makerReceiveToken: "",
-      makerSellToken: "",
+      makerReceiveToken: null,
+      makerSellToken: null,
       takerDepositToken: "",
       makerTokenType: null,
       takerTokenType: null,
@@ -68,7 +68,6 @@ class App extends Component {
     offer(makerInputAddress,makerSellAmount,makerAskAmount, makerSellToken, makerReceiveToken) {
       (async () => {
       console.log("OFFER");
-      console.log(makerSellToken, makerReceiveToken);
 
       const DECIMALS = 18;
 
@@ -80,13 +79,9 @@ class App extends Component {
 const SELLING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymbolIfExistsAsync(makerSellToken)
 const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymbolIfExistsAsync(makerReceiveToken);
 
-console.log("hiii")
-console.log(SELLING_TOKEN_ADDRESS)
-
       const EXCHANGE_ADDRESS   = await zeroEx.exchange.getContractAddressAsync();  // The Exchange.sol address (0x exchange smart contract)
       const accounts =  await zeroEx.getAvailableAddressesAsync();
 
-      console.log(accounts);
 
 
         // Unlimited allowances to 0x contract for maker
@@ -123,6 +118,8 @@ console.log(SELLING_TOKEN_ADDRESS)
                             };
 
         this.setState({signedOrders: signedOrder})
+        console.log("SIGNED ORDER")
+        console.log(signedOrder)
 
         })().catch(console.log);
 
@@ -130,12 +127,8 @@ console.log(SELLING_TOKEN_ADDRESS)
 
   buy(signedOrder, takerInputAddress, makerBuyAmount, takerDepositToken) {
     (async () => {
-      console.log("BUY")
-      console.log("Maker buy amount");
-      console.log(makerBuyAmount);
+      console.log("BUY");
       const DECIMALS = 18;
-      console.log('takerInputAddress')
-      console.log(takerInputAddress)
        const WETH_ADDRESS = await zeroEx.etherToken.getContractAddressAsync();
               // Unlimited allowances to 0x contract for taker
         const txHashAllowTaker = await zeroEx.token.setUnlimitedProxyAllowanceAsync(WETH_ADDRESS, takerInputAddress);
@@ -163,6 +156,7 @@ console.log(SELLING_TOKEN_ADDRESS)
 
         // Transaction Receipt
         const txReceipt = await zeroEx.awaitTransactionMinedAsync(txHash);
+        console.log("Receipt")
         console.log(txReceipt.logs);
 
         })().catch(console.log);
