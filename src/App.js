@@ -76,8 +76,8 @@ class App extends Component {
       const WETH_ADDRESS = await zeroEx.etherToken.getContractAddressAsync();      // The wrapped ETH token contract
       const ZRX_ADDRESS  = await zeroEx.exchange.getZRXTokenAddressAsync();        // The ZRX token contract
 
-      const SELLING_TOKEN_ADDRESS = makerSellToken;
-      const RECEIVING_TOKEN_ADDRESS = makerReceiveToken;
+const SELLING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymbolIfExistsAsync(makerSellToken)
+const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymbolIfExistsAsync(makerReceiveToken);
 
       const EXCHANGE_ADDRESS   = await zeroEx.exchange.getContractAddressAsync();  // The Exchange.sol address (0x exchange smart contract)
       const accounts =  await zeroEx.getAvailableAddressesAsync();
@@ -185,14 +185,6 @@ class App extends Component {
     this.setState({makerBuyAmount: event});
   }
 
-  handleMakerSellTokenChange(event) {
-    this.setState({makerSellToken: event});
-  }
-
-  handleMakerReceiveTokenChange(event) {
-    this.setState({makerReceiveToken: event});
-  }
-
   getMakerBalance(makerTokenType, makerInputAddress) {
 
     const DECIMALS = 18;
@@ -264,11 +256,6 @@ class App extends Component {
 
         <Card>
           <Card.Section>
-          <Select
-              label="Token"
-              options={this.state.tokenList.map((token, i) =>`${token.symbol}`)}
-              placeholder="Select"
-            />
             <TextField
               label="Maker address"
               helpText="Input address you want any leftover tokens to be sent to."
@@ -276,13 +263,15 @@ class App extends Component {
               onChange={(event)=> this.handleMakerInputChange(event)}
               type="text"
             />
-            <TextField
-              label="Selling Token"
-              helpText="Specify the token to be sold."
+             <Select
+              label="Selling Token Type"
+              options={this.state.tokenList.map((token, i) =>
+            `${token.symbol}`)}
+              placeholder="Specify the token to be sold."
               value={this.state.makerSellToken}
-              onChange={(event)=> this.handleMakerSellTokenChange(event)}
-              type="text"
+              onChange={(value)=> this.setState({makerSellToken: value})}
             />
+
              <TextField
               label="Sell"
               helpText="Specify the amount of token to be sold."
@@ -290,12 +279,13 @@ class App extends Component {
               onChange={(event)=> this.handleMakerSellAmountChange(event)}
               type="text"
             />
-            <TextField
+            <Select
               label="Receiving Token"
-              helpText="Specify the token to be received."
+              options={this.state.tokenList.map((token, i) =>
+            `${token.symbol}`)}
+              placeholder="Specify the token to be received."
               value={this.state.makerReceiveToken}
-              onChange={(event)=> this.handleMakerReceiveTokenChange(event)}
-              type="text"
+              onChange={(value)=> this.setState({makerReceiveToken: value})}
             />
              <TextField
               label="Receiving Amount"
