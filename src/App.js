@@ -220,9 +220,9 @@ const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymb
     console.log(this.state)
     return (
       <Page
-        title="0x shapeshift"
+        title="SWAP 20"
     >
-        <Card title="ERC20 Swap">
+        <Card>
           <Card.Section>
             <Select
               label="Buying Token Type"
