@@ -33,6 +33,7 @@ class App extends Component {
       open: true,
       makerBalance: "",
       takerBalance: "",
+      accountsList: [],
     }
     this.handleMakerInputChange = this.handleMakerInputChange.bind(this);
     this.handleMakerSellAmountChange = this.handleMakerSellAmountChange.bind(this);
@@ -41,6 +42,7 @@ class App extends Component {
     this.handleMakerBuyAmountChange = this.handleMakerBuyAmountChange.bind(this);
     this.getMakerBalance = this.getMakerBalance.bind(this);
     this.getTakerBalance = this.getTakerBalance.bind(this);
+    this.generateTestAddress = this.generateTestAddress.bind(this);
 
     this.offer = this.offer.bind(this);
     this.buy = this.buy.bind(this);
@@ -188,6 +190,14 @@ class App extends Component {
         })().catch(console.log);
   }
 
+  generateTestAddress() {
+    (async () => {
+      const accounts =  await zeroEx.getAvailableAddressesAsync();
+      this.setState({accountsList: accounts});
+
+        })().catch(console.log);
+  }
+
   render() {
     console.log(this.state)
     return (
@@ -274,6 +284,16 @@ class App extends Component {
             <div>Current Balance: {this.state.takerBalance}</div>
             <Card.Section>
               <Button primary onClick={()=> this.getTakerBalance(this.state.takerInputAddress)}>Get Balance</Button>
+            </Card.Section>
+          </Card.Section>
+        </Card>
+        <Card title="Generate Test addresses">
+          <Card.Section>
+            <div>Test address: </div>
+            {this.state.accountsList.map((account) =>
+            <li>{account}</li>)}
+            <Card.Section>
+              <Button primary onClick={()=> this.generateTestAddress()}>Generate test addresses</Button>
             </Card.Section>
           </Card.Section>
         </Card>
