@@ -34,6 +34,7 @@ class App extends Component {
       makerBalance: "",
       takerBalance: "",
       accountsList: [],
+      tokenList: [],
     }
     this.handleMakerInputChange = this.handleMakerInputChange.bind(this);
     this.handleMakerSellAmountChange = this.handleMakerSellAmountChange.bind(this);
@@ -47,6 +48,13 @@ class App extends Component {
     this.offer = this.offer.bind(this);
     this.buy = this.buy.bind(this);
 
+  }
+
+  componentDidMount() {
+      (async () => {
+      const tokenList = await zeroEx.tokenRegistry.getTokensAsync();
+      this.setState({tokenList: tokenList});
+      })().catch(console.log);
   }
 
 
@@ -290,8 +298,8 @@ class App extends Component {
         <Card title="Generate Test addresses">
           <Card.Section>
             <div>Test address: </div>
-            {this.state.accountsList.map((account) =>
-            <li>{account}</li>)}
+            {this.state.accountsList.map((account, i) =>
+            <li key={i}>{account}</li>)}
             <Card.Section>
               <Button primary onClick={()=> this.generateTestAddress()}>Generate test addresses</Button>
             </Card.Section>
