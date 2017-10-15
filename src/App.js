@@ -224,6 +224,15 @@ const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymb
     >
         <Card>
           <Card.Section>
+            <TextField
+              label="Deposit address"
+              helpText="Input address you want your tokens to be deposited."
+              value={this.state.takerInputAddress}
+              onChange={(event)=> this.handleTakerInputChange(event)}
+              type="text"
+            />
+          </Card.Section>
+          <Card.Section>
             <Select
               label="Buying Token Type"
               options={this.state.tokenList.map((token, i) =>
@@ -240,15 +249,7 @@ const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymb
               helpText="Input the amount of tokens you want to sell."
             />
           </Card.Section>
-          <Card.Section>
-            <TextField
-              label="Taker address"
-              helpText="Input address you want your tokens to be deposited."
-              value={this.state.takerInputAddress}
-              onChange={(event)=> this.handleTakerInputChange(event)}
-              type="text"
-            />
-          </Card.Section>
+          
 
           <Card.Section>
           <Button destructive onClick={()=>this.buy(this.state.signedOrders,this.state.takerInputAddress,this.state.makerBuyAmount, this.state.takerDepositToken)}>Buy</Button>
@@ -258,7 +259,7 @@ const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymb
         <Card>
           <Card.Section>
             <TextField
-              label="Maker address"
+              label="Seller address"
               helpText="Input address you want any leftover tokens to be sent to."
               value={this.state.makerInputAddress}
               onChange={(event)=> this.handleMakerInputChange(event)}
