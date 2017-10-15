@@ -38,6 +38,7 @@ class App extends Component {
       tokenList: [],
       makerReceiveToken: "",
       makerSellToken: "",
+      takerDepositToken: "",
       makerTokenType: null,
       takerTokenType: null,
     }
@@ -78,6 +79,9 @@ class App extends Component {
 
 const SELLING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymbolIfExistsAsync(makerSellToken)
 const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymbolIfExistsAsync(makerReceiveToken);
+
+console.log("hiii")
+console.log(SELLING_TOKEN_ADDRESS)
 
       const EXCHANGE_ADDRESS   = await zeroEx.exchange.getContractAddressAsync();  // The Exchange.sol address (0x exchange smart contract)
       const accounts =  await zeroEx.getAvailableAddressesAsync();
@@ -124,7 +128,7 @@ const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymb
 
   }
 
-  buy(signedOrder, takerInputAddress,makerBuyAmount ) {
+  buy(signedOrder, takerInputAddress, makerBuyAmount, takerDepositToken) {
     (async () => {
       console.log("BUY")
       console.log("Maker buy amount");
@@ -227,9 +231,12 @@ const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymb
         <Card title="ERC20 Swap">
           <Card.Section>
             <Select
-              label="Token"
-              options={this.state.tokenList.map((token, i) =>`${token.symbol}`)}
-              placeholder="Select"
+              label="Buying Token Type"
+              options={this.state.tokenList.map((token, i) =>
+            `${token.symbol}`)}
+              placeholder="Specify the token to be sold."
+              value={this.state.takerDepositToken}
+              onChange={(value)=> this.setState({takerDepositToken: value})}
             />
             <TextField
               label="Buy amount"
@@ -250,7 +257,7 @@ const RECEIVING_TOKEN_ADDRESS = await zeroEx.tokenRegistry.getTokenAddressBySymb
           </Card.Section>
 
           <Card.Section>
-          <Button destructive onClick={()=>this.buy(this.state.signedOrders,this.state.takerInputAddress,this.state.makerBuyAmount)}>Buy</Button>
+          <Button destructive onClick={()=>this.buy(this.state.signedOrders,this.state.takerInputAddress,this.state.makerBuyAmount, this.state.takerDepositToken)}>Buy</Button>
           </Card.Section>
         </Card>
 
