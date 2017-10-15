@@ -31,12 +31,16 @@ class App extends Component {
       makerAskAmountChange: "",
       makerBuyAmount: "",
       open: true,
+      makerBalance: "",
+      takerBalance: "",
     }
     this.handleMakerInputChange = this.handleMakerInputChange.bind(this);
     this.handleMakerSellAmountChange = this.handleMakerSellAmountChange.bind(this);
     this.handleMakerAskAmountChange = this.handleMakerAskAmountChange.bind(this);
     this.handleTakerInputChange = this.handleTakerInputChange.bind(this);
     this.handleMakerBuyAmountChange = this.handleMakerBuyAmountChange.bind(this);
+    this.getMakerBalance = this.getMakerBalance.bind(this);
+    this.getTakerBalance = this.getTakerBalance.bind(this);
 
     this.offer = this.offer.bind(this);
     this.buy = this.buy.bind(this);
@@ -126,7 +130,7 @@ class App extends Component {
 
         //Try to fill order
         const shouldThrowOnInsufficientBalanceOrAllowance = true;
-        const fillTakerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(0.1), DECIMALS);
+        const fillTakerTokenAmount = ZeroEx.toBaseUnitAmount(new BigNumber(makerBuyAmount), DECIMALS);
 
         // Try filling order
         const txHash = await zeroEx.exchange.fillOrderAsync(signedOrder, fillTakerTokenAmount,
@@ -158,6 +162,30 @@ class App extends Component {
 
   handleMakerBuyAmountChange(event) {
     this.setState({makerBuyAmount: event});
+  }
+
+  getMakerBalance(makerInputAddress) {
+    const DECIMALS = 18;
+
+    (async () => {
+      console.log("hi")
+      const ZRX_ADDRESS  = await zeroEx.exchange.getZRXTokenAddressAsync();
+      const balance = await zeroEx.token.getBalanceAsync(ZRX_ADDRESS, makerInputAddress)
+    this.setState({makerBalance: balance.toNumber()});
+
+        })().catch(console.log);
+  }
+
+  getTakerBalance(takerInputAddress) {
+    const DECIMALS = 18;
+
+    (async () => {
+      console.log("hi")
+      const WETH_ADDRESS = await zeroEx.etherToken.getContractAddressAsync();
+      const balance = await zeroEx.token.getBalanceAsync(WETH_ADDRESS, takerInputAddress)
+    this.setState({takerBalance: balance.toNumber()});
+
+        })().catch(console.log);
   }
 
   render() {
@@ -216,6 +244,36 @@ class App extends Component {
             />
             <Card.Section>
               <Button primary onClick={()=> this.offer(this.state.makerInputAddress,this.state.makerSellAmount,this.state.makerAskAmount)}>Offer</Button>
+            </Card.Section>
+          </Card.Section>
+        </Card>
+        <Card title="Maker Balance">
+          <Card.Section>
+            <TextField
+              label="Maker address"
+              helpText="Input address to show balance."
+              value={this.state.makerInputAddress}
+              onChange={(event)=> this.handleMakerInputChange(event)}
+              type="text"
+            />
+            <div>Current Balance: {this.state.makerBalance}</div>
+            <Card.Section>
+              <Button primary onClick={()=> this.getMakerBalance(this.state.makerInputAddress)}>Get Balance</Button>
+            </Card.Section>
+          </Card.Section>
+        </Card>
+        <Card title="Taker Balance">
+          <Card.Section>
+            <TextField
+              label="Taker address"
+              helpText="Input address to show balance."
+              value={this.state.takerInputAddress}
+              onChange={(event)=> this.handleTakerInputChange(event)}
+              type="text"
+            />
+            <div>Current Balance: {this.state.takerBalance}</div>
+            <Card.Section>
+              <Button primary onClick={()=> this.getTakerBalance(this.state.takerInputAddress)}>Get Balance</Button>
             </Card.Section>
           </Card.Section>
         </Card>
