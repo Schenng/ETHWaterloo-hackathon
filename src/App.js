@@ -37,9 +37,9 @@ class App extends Component {
       accountsList: [],
       tokenList: [],
       makerReceiveToken: "",
-      makerSellToken: ""
+      makerSellToken: "",
       makerTokenType: null,
-      makerTokenType: null,
+      takerTokenType: null,
     }
     this.handleMakerInputChange = this.handleMakerInputChange.bind(this);
     this.handleMakerSellAmountChange = this.handleMakerSellAmountChange.bind(this);
